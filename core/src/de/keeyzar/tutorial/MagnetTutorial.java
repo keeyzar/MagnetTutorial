@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import de.keeyzar.tutorial.entities.Coin;
+import de.keeyzar.tutorial.entities.CustomContactListener;
+import de.keeyzar.tutorial.entities.MagnetBody;
 
 /**
  * BASIC SETUP!!!
@@ -21,15 +23,18 @@ public class MagnetTutorial extends ApplicationAdapter {
     private Box2DDebugRenderer renderer;
 
     private Body player;
+    private MagnetBody magnetBody;
 
-	@Override
+    @Override
 	public void create () {
         camera = new OrthographicCamera(20, 20);
         world = new World(new Vector2(0, -10), true);
+        world.setContactListener(new CustomContactListener());
         renderer = new Box2DDebugRenderer();
         new Ground(world);
         createPlayer();
-	}
+        magnetBody = new MagnetBody(player, world);
+    }
 
     //create our playerBody
     private void createPlayer() {
@@ -48,6 +53,7 @@ public class MagnetTutorial extends ApplicationAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         checkInput();
+        magnetBody.update();
         world.step(timeStep, 6, 2);
         updateCamera();
         renderer.render(world, camera.combined);
